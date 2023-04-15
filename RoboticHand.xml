@@ -187,5 +187,7 @@
         <exclude name="exclude_palm_2_thumb" body1="palm" body2="thumb_finger"/>
   </contact>
 
-
+  <actuator>
+    <velocity name="index_rotation" joint="index_finger_1st_join" kv="100"/>
+  </actuator>
 </mujoco>
