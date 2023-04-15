@@ -1,0 +1,33 @@
+<mujoco>
+<option gravity="0 0 0" />
+ <default>
+    <default class="left_hand">
+      <mesh scale="0.001 0.001 0.001"/>
+      <joint axis="1 0 0" damping="0.05" armature="0.0002" frictionloss="0.01"/>
+      <position forcerange="-1 1"/>
+
+      <default class="wrist">
+        <joint damping="0.5"/>
+        <default class="wrist_y">
+          <joint axis="0 -1 0" range="-0.523599 0.174533"/>
+          <position kp="10" ctrlrange="-0.523599 0.174533" forcerange="-10 10"/>
+        </default>
+        <default class="wrist_x">
+          <joint range="-0.698132 0.488692"/>
+          <position kp="8" ctrlrange="-0.698132 0.488692" forcerange="-5 5"/>
+        </default>
+      </default>
+	</default>
+	<default class="plastic">
+        <geom solimp="0.5 0.99 0.0001" solref="0.005 1"/>
+        <default class="plastic_visual">
+          <geom type="mesh" material="black" contype="0" conaffinity="0" group="2"/>
+        </default>
+        <default class="plastic_collision">
+          <geom group="3"/>
+        </default>
+      </default>
+</default>
+
+
+</mujoco>
