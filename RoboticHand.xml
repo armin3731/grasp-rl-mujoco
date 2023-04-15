@@ -30,4 +30,54 @@
 </default>
 
 
+<asset>
+    <material name="blue" specular="0.5" shininess="0.25" rgba="0.2 0.2 0.8 1"/>
+    <material name="gray" specular="0.0" shininess="0.25" rgba="0.80848 0.80848 0.80848 1"/>
+    <material name="white" specular="0" shininess="0.25" rgba="1 1 1 1"/>
+
+    <!-- Palm -->
+    <mesh name="hand_palm" file="assets/handPalm.obj" scale="-0.01 0.01 0.01" />
+
+    <!-- Index Finger -->
+    <mesh name="index_female" file="assets/fingers/index/female_index.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="index_part12" file="assets/fingers/index/part1_2_index.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="index_part3" file="assets/fingers/index/part3_index.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="index_part4" file="assets/fingers/index/part4_index.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="index_part5" file="assets/fingers/index/part5_index.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="index_tip" file="assets/fingers/index/tip_index.stl" scale="-0.01 0.01 0.01" />
+
+    <!-- Middle Finger -->
+    <mesh name="middle_part12" file="assets/fingers/middle/part1_2_middle.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="middle_female" file="assets/fingers/middle/female_middle.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="middle_part3" file="assets/fingers/middle/part3_middle.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="middle_part4" file="assets/fingers/middle/part4_middle.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="middle_part5" file="assets/fingers/middle/part5_middle.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="middle_tip" file="assets/fingers/middle/tip_middle.stl" scale="-0.01 0.01 0.01" />
+
+    <!-- Ring Finger -->
+    <mesh name="ring_part12" file="assets/fingers/ring/part1_2_ring.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="ring_female" file="assets/fingers/ring/female_ring.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="ring_part3" file="assets/fingers/ring/part3_ring.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="ring_part4" file="assets/fingers/ring/part4_ring.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="ring_part5" file="assets/fingers/ring/part5_ring.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="ring_tip" file="assets/fingers/ring/tip_ring.stl" scale="-0.01 0.01 0.01" />
+
+    <!-- Pinky Finger -->
+    <mesh name="pinky_part12" file="assets/fingers/pinky/part1_2_pinky.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="pinky_female" file="assets/fingers/pinky/female_pinky.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="pinky_part3" file="assets/fingers/pinky/part3_pinky.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="pinky_part4" file="assets/fingers/pinky/part4_pinky.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="pinky_part5" file="assets/fingers/pinky/part5_pinky.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="pinky_tip" file="assets/fingers/pinky/tip_pinky.stl" scale="-0.01 0.01 0.01" />
+
+    <!-- Thumb Finger -->
+    <mesh name="thumb_part12" file="assets/fingers/thumb/part1_2_thumb.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="thumb_female" file="assets/fingers/thumb/female_thumb.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="thumb_part3" file="assets/fingers/thumb/part3_thumb.stl" scale="-0.01 0.01 0.01" />
+    <!-- <mesh name="thumb_part4" file="assets/fingers/thumb/part4_thumb.stl" scale="-0.01 0.01 0.01" />
+    <mesh name="thumb_part5" file="assets/fingers/thumb/part5_thumb.stl" scale="-0.01 0.01 0.01" /> -->
+    <mesh name="thumb_tip" file="assets/fingers/thumb/tip_thumb.stl" scale="-0.01 0.01 0.01" />
+
+  </asset>
+
 </mujoco>
