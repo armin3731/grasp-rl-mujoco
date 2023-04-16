@@ -1,32 +1,7 @@
 <mujoco>
 <option gravity="0 0 0" />
  <default>
-    <default class="left_hand">
-      <mesh scale="0.001 0.001 0.001"/>
-      <joint axis="1 0 0" damping="0.05" armature="0.0002" frictionloss="0.01"/>
-      <position forcerange="-1 1"/>
-
-      <default class="wrist">
-        <joint damping="0.5"/>
-        <default class="wrist_y">
-          <joint axis="0 -1 0" range="-0.523599 0.174533"/>
-          <position kp="10" ctrlrange="-0.523599 0.174533" forcerange="-10 10"/>
-        </default>
-        <default class="wrist_x">
-          <joint range="-0.698132 0.488692"/>
-          <position kp="8" ctrlrange="-0.698132 0.488692" forcerange="-5 5"/>
-        </default>
-      </default>
-	</default>
-	<default class="plastic">
-        <geom solimp="0.5 0.99 0.0001" solref="0.005 1"/>
-        <default class="plastic_visual">
-          <geom type="mesh" material="black" contype="0" conaffinity="0" group="2"/>
-        </default>
-        <default class="plastic_collision">
-          <geom group="3"/>
-        </default>
-      </default>
+     <site type="sphere" rgba=".9 .6 .6 0.8" size="0.02"/>
 </default>
 
 
@@ -87,10 +62,12 @@
     <body name="palm">
       <geom type="mesh" mesh="hand_palm" material="white" euler="0 90 0" pos="0 0 1"/>
     </body>
+    <site name="s_palm" pos="0.9 0.2 1"/>
 
     <!-- Index Finger -->
+    <site name="s_index_base" pos="0.65 0.2 1.480"/>
     <body euler="90 0 -94" pos="-0.2 0.1 1.480">
-      <joint name="index_finger_1st_join" type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 180" damping="0.3"/>
+      <joint name="index_finger_1st_join" type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 45" damping="0.3"/>
       <body name="index_finger">
         <geom type="mesh" mesh="index_female" material="blue" pos="0.005 0 0" euler="0 180 0" />
       </body>
@@ -102,12 +79,14 @@
         <body>
           <joint type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 180" damping="0.3"/>
           <geom type="mesh" mesh="index_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
-          <geom type="mesh" mesh="index_tip" material="gray" pos="0.005 -0.6 0" euler="180 0 0" />
+          <geom name="index_tip" type="mesh" mesh="index_tip" material="gray" pos="0.005 -0.6 0" euler="180 0 0" />
+          <site name="s_index_tip" pos="0 -.8 0"/>
         </body>
       </body>
     </body>
 
     <!-- Middle Finger -->
+    <site name="s_middle_base" pos="0.65 0.2 1.23"/>
     <body euler="90 0 -90" pos="-0.2 0.1 1.23">
       <joint type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 180" damping="0.3"/>
       <body name="middle_finger">
@@ -122,11 +101,13 @@
           <joint type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 180" damping="0.3"/>
           <geom type="mesh" mesh="middle_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom type="mesh" mesh="middle_tip" material="gray" pos="0.005 -0.6 0"  euler="180 0 0" />
+          <site name="s_middle_tip" pos="0 -.8 0"/>
         </body>
       </body> 
     </body>
 
     <!-- Ring Finger -->
+    <site name="s_ring_base" pos="0.65 0.2 0.975"/>
     <body euler="90 0 -85" pos="-0.2 0.1 0.975">
       <joint type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 180" damping="0.3"/>
       <body name="ring_finger">
@@ -141,11 +122,13 @@
           <joint type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 180" damping="0.3"/>
           <geom type="mesh" mesh="middle_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom type="mesh" mesh="middle_tip" material="gray" pos="0.005 -0.6 0"  euler="180 0 0" />
+          <site name="s_ring_tip" pos="0 -.8 0"/>
         </body>
       </body> 
     </body>
 
     <!-- Pinky Finger -->
+    <site name="s_pinky_base" pos="0.65 0.2 0.725"/>
     <body euler="90 0 -80" pos="-0.2 0.1 0.725">
       <joint type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 180" damping="0.3"/>
       <body name="pinky_finger">
@@ -160,6 +143,7 @@
           <joint type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 180" damping="0.3"/>
           <geom type="mesh" mesh="pinky_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom type="mesh" mesh="pinky_tip" material="gray" pos="0.005 -0.6 0"  euler="180 0 0" />
+          <site name="s_pinky_tip" pos="0 -.8 0"/>
         </body>
       </body> 
     </body>
@@ -187,6 +171,14 @@
         <exclude name="exclude_palm_2_thumb" body1="palm" body2="thumb_finger"/>
   </contact>
 
+  <tendon>
+    <spatial name="index_tendon" width="0.002" rgba=".95 .3 .3 1" limited="true" range="0 0.33">
+        <site site="s_palm"/>
+        <site site="s_index_base"/>
+        <!-- <geom geom="index_tip"/> -->
+        <site site="s_index_tip"/>
+    </spatial>
+  </tendon>
   <actuator>
     <velocity name="index_rotation" joint="index_finger_1st_join" kv="100"/>
   </actuator>
