@@ -1,4 +1,6 @@
 <mujoco>
+<compiler autolimits="true"/>
+
 <option gravity="0 0 0" />
  <default>
      <site type="sphere" rgba=".9 .6 .6 0.8" size="0.02"/>
@@ -67,17 +69,17 @@
     <!-- Index Finger -->
     <site name="s_index_base" pos="0.70 0.2 1.375"/>
     <body euler="90 0 -94" pos="-0.2 0.1 1.480">
-      <joint name="index_finger_1st_join" type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 45" damping="0.3"/>
+      <joint name="index_finger_1st_joint" type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 180" damping="0.3"/>
       <body name="index_finger">
         <geom type="mesh" mesh="index_female" material="blue" pos="0.005 0 0" euler="0 180 0" />
       </body>
       <geom type="mesh" mesh="index_part12" material="blue" pos="0.005 0 0" euler="180 0 0" />
       <body>
-        <joint type="hinge" axis="1 0 0" pos="-0.05 -0.18 0" limited="true" range="0 180" damping="0.3"/>
+        <joint name="index_finger_2nd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.18 0" limited="true" range="0 180" damping="0.3"/>
         <geom type="mesh" mesh="index_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0"  />
         <geom type="mesh" mesh="index_part4" material="blue" pos="0.005 -0.3 0" euler="180 0 0" />
         <body>
-          <joint type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 180" damping="0.3"/>
+          <joint name="index_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 180" damping="0.3"/>
           <geom type="mesh" mesh="index_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom name="index_tip" type="mesh" mesh="index_tip" material="gray" pos="0.005 -0.6 0" euler="180 0 0" />
           <site name="s_index_tip" pos="0 -.8 0"/>
@@ -174,33 +176,13 @@
   </contact>
 
   <tendon>
-    <spatial name="index_tendon" width="0.002" rgba=".95 .3 .3 1" limited="true" range="0 0.33">
-        <site site="s_palm"/>
-        <site site="s_index_base"/>
-        <site site="s_index_tip"/>
-    </spatial>
-    <spatial name="middle_tendon" width="0.002" rgba=".95 .3 .3 1" limited="true" range="0 0.33">
-        <site site="s_palm"/>
-        <site site="s_middle_base"/>
-        <site site="s_middle_tip"/>
-    </spatial>
-    <spatial name="ring_tendon" width="0.002" rgba=".95 .3 .3 1" limited="true" range="0 0.33">
-        <site site="s_palm"/>
-        <site site="s_ring_base"/>
-        <site site="s_ring_tip"/>
-    </spatial>
-    <spatial name="pinky_tendon" width="0.002" rgba=".95 .3 .3 1" limited="true" range="0 0.33">
-        <site site="s_palm"/>
-        <site site="s_pinky_base"/>
-        <site site="s_pinky_tip"/>
-    </spatial>
-    <spatial name="thumb_tendon" width="0.002" rgba=".95 .3 .3 1" limited="true" range="0 0.33">
-        <site site="s_palm"/>
-        <site site="s_thumb_base"/>
-        <site site="s_thumb_tip"/>
-    </spatial>
+    <fixed name="index_tendon">
+      <joint joint="index_finger_2nd_joint" coef="1"/>
+      <joint joint="index_finger_3rd_joint" coef="1"/>
+    </fixed>
   </tendon>
   <actuator>
-    <velocity name="index_rotation" joint="index_finger_1st_join" kv="100"/>
+    <position name="i1ndex_finger_joint" joint="index_finger_1st_joint" ctrlrange="-3 8"  gear="1.7"/>
+    <position name="i2ndex_finger_joint" tendon="index_tendon" ctrlrange="-3 5" />
   </actuator>
 </mujoco>
