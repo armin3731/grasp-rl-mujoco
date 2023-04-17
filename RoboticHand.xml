@@ -140,13 +140,14 @@
 
     <!-- Thumb Finger -->
     <body euler="90 0 150" pos="0.875 0.1 1.675">
-      <joint type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 45" damping="0.3"/>
+      <joint name="thumb_finger_1st_joint" type="hinge" axis="1 0 0" pos="-0.05 0.18 0" limited="true" range="0 180" damping="0.3"/>
       <body name="thumb_finger">
         <geom type="mesh" mesh="thumb_female" material="blue" pos="0.005 0 0"  euler="0 180 0"/>
+        <geom type="mesh" mesh="thumb_part12" material="blue" pos="0.005 0 0"  euler="180 0 0" /> 
       </body>
-      <geom type="mesh" mesh="thumb_part12" material="blue" pos="0.005 0 0"  euler="180 0 0" /> 
+      
       <body>
-        <joint type="hinge" axis="1 0 0" pos="-0.05 -0.18 0" limited="true" range="0 180" damping="0.3"/>
+        <joint name="thumb_finger_2nd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.18 0" limited="true" range="0 180" damping="0.3"/>
         <geom type="mesh" mesh="thumb_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0" />
         <geom type="mesh" mesh="thumb_tip" material="gray" pos="0.005 -0.3 0"  euler="180 0 0" />
       </body> 
@@ -178,6 +179,9 @@
       <joint joint="pinky_finger_2nd_joint" coef="1"/>
       <joint joint="pinky_finger_3rd_joint" coef="1"/>
     </fixed>
+    <fixed name="thumb_tendon">
+      <joint joint="thumb_finger_2nd_joint" coef="1"/>
+    </fixed>
   </tendon>
   <actuator>
     <position name="index_base" joint="index_finger_1st_joint" ctrlrange="-3 8"  gear="1.7"/>
@@ -188,5 +192,7 @@
     <position name="ring_tip" tendon="ring_tendon" ctrlrange="-3 5" />
     <position name="pinky_base" joint="pinky_finger_1st_joint" ctrlrange="-3 8"  gear="1.7"/>
     <position name="pinky_tip" tendon="pinky_tendon" ctrlrange="-3 5" />
+    <position name="thumb_base" joint="thumb_finger_1st_joint" ctrlrange="-3 8"  gear="1.7"/>
+    <position name="thumb_tip" tendon="thumb_tendon" ctrlrange="-3 5" />
   </actuator>
 </mujoco>
