@@ -164,22 +164,27 @@
 
   <tendon>
     <fixed name="index_tendon">
+      <joint joint="index_finger_1st_joint" coef="1"/>
       <joint joint="index_finger_2nd_joint" coef="1"/>
       <joint joint="index_finger_3rd_joint" coef="1"/>
     </fixed>
     <fixed name="middle_tendon">
+      <joint joint="middle_finger_1st_joint" coef="1"/>
       <joint joint="middle_finger_2nd_joint" coef="1"/>
       <joint joint="middle_finger_3rd_joint" coef="1"/>
     </fixed>
     <fixed name="ring_tendon">
+      <joint joint="ring_finger_1st_joint" coef="1"/>
       <joint joint="ring_finger_2nd_joint" coef="1"/>
       <joint joint="ring_finger_3rd_joint" coef="1"/>
     </fixed>
     <fixed name="pinky_tendon">
+      <joint joint="pinky_finger_1st_joint" coef="1"/>
       <joint joint="pinky_finger_2nd_joint" coef="1"/>
       <joint joint="pinky_finger_3rd_joint" coef="1"/>
     </fixed>
     <fixed name="thumb_tendon">
+      <joint joint="thumb_finger_1st_joint" coef="1"/>
       <joint joint="thumb_finger_2nd_joint" coef="1"/>
     </fixed>
   </tendon>
