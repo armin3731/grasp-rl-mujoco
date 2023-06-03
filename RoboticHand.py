@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 xml_path = 'RoboticHand.xml'
-simend = 5
+# simend = 20
 
 # For callback functions
 button_left = False
@@ -100,7 +100,7 @@ opt = mj.MjvOption()                        # visualization options
 
 # Init GLFW, create window, make OpenGL context current, request v-sync
 glfw.init()
-window = glfw.create_window(1200, 900, "Demo", None, None)
+window = glfw.create_window(1200, 900, "Robotic Hand", None, None)
 glfw.make_context_current(window)
 glfw.swap_interval(1)
 
@@ -121,14 +121,21 @@ mj.set_mjcb_control(controller)
 
 #print(os.name)
 
+# Camera settings
+cam.azimuth =  -115.3410740203193
+cam.distance =  5.4363140749365115
+cam.elevation = -32.198838896952104
+cam.lookat = np.array([ 0.64240141, -0.27601188,  0.45069815])
+
 while not glfw.window_should_close(window):
     simstart = data.time
 
     while (data.time - simstart < 1.0/60.0):
         mj.mj_step(model, data)
 
-    if (data.time>=simend):
-        break;
+    # if (data.time>=simend):
+    #     break
+    
 
     # get framebuffer viewport
     viewport_width, viewport_height = glfw.get_framebuffer_size(
