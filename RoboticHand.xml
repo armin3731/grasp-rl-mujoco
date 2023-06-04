@@ -1,11 +1,12 @@
 <mujoco>
 <compiler autolimits="true"/>
 
-<option gravity="0 0 0" />
+<option gravity="0 0 -3" />
 
 
 <asset>
     <material name="blue" specular="0.5" shininess="0.25" rgba="0.2 0.2 0.8 1"/>
+    <material name="orange" specular="0.3" shininess="0.25" rgba="1 0.6 0.1 1"/>
     <material name="gray" specular="0.0" shininess="0.25" rgba="0.80848 0.80848 0.80848 1"/>
     <material name="white" specular="0" shininess="0.25" rgba="1 1 1 1"/>
 
@@ -145,12 +146,22 @@
         <geom type="mesh" mesh="thumb_female" material="blue" pos="0.005 0 0"  euler="0 180 0"/>
         <geom type="mesh" mesh="thumb_part12" material="blue" pos="0.005 0 0"  euler="180 0 0" /> 
       </body>
-      
       <body>
         <joint name="thumb_finger_2nd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.18 0" limited="true" range="0 90" damping="0.3"/>
         <geom type="mesh" mesh="thumb_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0" />
         <geom type="mesh" mesh="thumb_tip" material="gray" pos="0.005 -0.3 0"  euler="180 0 0" />
       </body> 
+    </body>
+
+    <!-- Object -->
+    <body euler="0 0 0" pos="-1.75 -1.6 -.2">
+    <joint name="object" type="free"/>
+      <body pos="2 2 2" euler="0 180 0">
+        <geom type="cylinder" size=".1 .1" material="white" pos="0 0 0" />
+        <geom type="cylinder" size=".1 .06" material="blue" pos="0 0 .16" />
+        <geom type="cylinder" size=".1 .16" material="orange" pos="0 0 .38" />
+        <geom type="cylinder" size=".1 .1" material="blue" pos="0 0 .63" />
+      </body>
     </body>
 	</worldbody>
 
