@@ -15,7 +15,12 @@ lasty = 0
 
 def controller(model, data):
     #put the controller here
-    pass
+    # pass
+    kp = 100
+    kv = 5
+
+    fingerNum = 1
+    fingerbend(fingerNum, True, kp, kv)
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
@@ -87,6 +92,14 @@ def scroll(window, xoffset, yoffset):
     mj.mjv_moveCamera(model, action, 0.0, -0.05 *
                       yoffset, scene, cam)
 
+def fingerbend(fingerNum:int, bend:bool, kp:int=100, kv:int=20 ):
+    actuatorNum = fingerNum*2
+    model.actuator_gainprm[actuatorNum , 0] = kp
+    model.actuator_biasprm[actuatorNum , 1] = -kp
+    model.actuator_gainprm[actuatorNum+1 , 0] = kv
+    model.actuator_biasprm[actuatorNum+1 , 2] = -kv
+    data.ctrl[actuatorNum] = 1.75*np.pi 
+
 #get the full path
 dirname = os.path.dirname(__file__)
 abspath = os.path.join(dirname , xml_path)
@@ -127,6 +140,10 @@ cam.distance =  5.4363140749365115
 cam.elevation = -32.198838896952104
 cam.lookat = np.array([ 0.64240141, -0.27601188,  0.45069815])
 
+print('Total number of DoFs in the model:', model.nv)
+print('Generalized positions:', data.qpos)
+print('Generalized velocities:', data.qvel)
+
 while not glfw.window_should_close(window):
     simstart = data.time
 
@@ -135,6 +152,7 @@ while not glfw.window_should_close(window):
 
     # if (data.time>=simend):
     #     break
+
     
 
     # get framebuffer viewport
@@ -154,3 +172,5 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
 
 glfw.terminate()
+
+
