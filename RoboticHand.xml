@@ -1,8 +1,8 @@
 <mujoco>
 <compiler autolimits="true"/>
 
-<option gravity="0 0 -3" />
-
+<option gravity="0 0 0" />
+<option impratio="50"/>
 
 <asset>
     <material name="blue" specular="0.5" shininess="0.25" rgba="0.2 0.2 0.8 1"/>
@@ -75,7 +75,7 @@
         <geom type="mesh" mesh="index_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0"  />
         <geom type="mesh" mesh="index_part4" material="blue" pos="0.005 -0.3 0" euler="180 0 0" />
         <body>
-          <joint name="index_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 90" damping="0.3"/>
+          <joint name="index_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 30" damping="0.3"/>
           <geom type="mesh" mesh="index_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom name="index_tip" type="mesh" mesh="index_tip" material="gray" pos="0.005 -0.6 0" euler="180 0 0" />
         </body>
@@ -94,7 +94,7 @@
         <geom type="mesh" mesh="middle_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0" />
         <geom type="mesh" mesh="middle_part4" material="blue" pos="0.005 -0.3 0"  euler="180 0 0" />
         <body>
-          <joint name="middle_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 90" damping="0.3"/>
+          <joint name="middle_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 30" damping="0.3"/>
           <geom type="mesh" mesh="middle_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom type="mesh" mesh="middle_tip" material="gray" pos="0.005 -0.6 0"  euler="180 0 0" />
         </body>
@@ -113,7 +113,7 @@
         <geom type="mesh" mesh="middle_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0" />
         <geom type="mesh" mesh="middle_part4" material="blue" pos="0.005 -0.3 0"  euler="180 0 0" />
         <body>
-          <joint name="ring_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 90" damping="0.3"/>
+          <joint name="ring_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 30" damping="0.3"/>
           <geom type="mesh" mesh="middle_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom type="mesh" mesh="middle_tip" material="gray" pos="0.005 -0.6 0"  euler="180 0 0" />
         </body>
@@ -132,7 +132,7 @@
         <geom type="mesh" mesh="pinky_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0" />
         <geom type="mesh" mesh="pinky_part4" material="blue" pos="0.005 -0.3 0"  euler="180 0 0" />
         <body>
-          <joint name="pinky_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 90" damping="0.3"/>
+          <joint name="pinky_finger_3rd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.47 0" limited="true" range="0 30" damping="0.3"/>
           <geom type="mesh" mesh="pinky_part5" material="blue" pos="0.005 -0.6 0" euler="0 90 0" />
           <geom type="mesh" mesh="pinky_tip" material="gray" pos="0.005 -0.6 0"  euler="180 0 0" />
         </body>
@@ -147,7 +147,7 @@
         <geom type="mesh" mesh="thumb_part12" material="blue" pos="0.005 0 0"  euler="180 0 0" /> 
       </body>
       <body>
-        <joint name="thumb_finger_2nd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.18 0" limited="true" range="0 90" damping="0.3"/>
+        <joint name="thumb_finger_2nd_joint" type="hinge" axis="1 0 0" pos="-0.05 -0.18 0" limited="true" range="0 30" damping="0.3"/>
         <geom type="mesh" mesh="thumb_part3" material="blue" pos="0.005 -0.32 0" euler="0 90 0" />
         <geom type="mesh" mesh="thumb_tip" material="gray" pos="0.005 -0.3 0"  euler="180 0 0" />
       </body> 
@@ -155,12 +155,12 @@
 
     <!-- Object -->
     <body euler="0 0 0" pos="-1.75 -1.6 -.2">
-    <joint name="object" type="free"/>
-      <body pos="2 2 2" euler="0 180 0">
-        <geom type="cylinder" size=".1 .1" material="white" pos="0 0 0" />
-        <geom type="cylinder" size=".1 .06" material="blue" pos="0 0 .16" />
-        <geom type="cylinder" size=".1 .16" material="orange" pos="0 0 .38" />
-        <geom type="cylinder" size=".1 .1" material="blue" pos="0 0 .63" />
+    <joint name="object_joint" type="free"/>
+      <body name="object" pos="2 2 2" euler="0 180 0">
+        <geom type="cylinder" size=".12 .1" material="white" pos="0 0 0" />
+        <geom type="cylinder" size=".12 .06" material="blue" pos="0 0 .16" />
+        <geom type="cylinder" size=".12 .16" material="orange" pos="0 0 .38" />
+        <geom type="cylinder" size=".12 .1" material="blue" pos="0 0 .63" />
       </body>
     </body>
 	</worldbody>
@@ -199,16 +199,25 @@
       <joint joint="thumb_finger_2nd_joint" coef="1"/>
     </fixed>
   </tendon>
+   <equality>
+    <!-- <weld body1="index_finger" body2="object"/> -->
+    <!-- <weld body1="middle_finger" body2="object"/> -->
+  </equality> 
   <actuator>
+    <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
+    <!-- <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
+    <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
+    <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
+    <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/>  -->
     <position name="index_pos_servo" tendon="index_tendon"  ctrlrange="-3 10" />
-    <velocity name="index_vel_servo" tendon="index_tendon" ctrlrange="-5 5" />
+    <!-- <velocity name="index_vel_servo" tendon="index_tendon" ctrlrange="-5 5" /> -->
     <position name="middle_servo" tendon="middle_tendon" ctrlrange="-3 10" />
-    <velocity name="middle_vel_servo" tendon="middle_tendon" ctrlrange="-5 5" />
+    <!-- <velocity name="middle_vel_servo" tendon="middle_tendon" ctrlrange="-5 5" /> -->
     <position name="ring_servo" tendon="ring_tendon" ctrlrange="-3 10" />
-    <velocity name="ring_vel_servo" tendon="ring_tendon" ctrlrange="-5 5" />
+    <!-- <velocity name="ring_vel_servo" tendon="ring_tendon" ctrlrange="-5 5" /> -->
     <position name="pinky_servo" tendon="pinky_tendon" ctrlrange="-3 10" />
-    <velocity name="pinky_vel_servo" tendon="pinky_tendon" ctrlrange="-5 5" />
+    <!-- <velocity name="pinky_vel_servo" tendon="pinky_tendon" ctrlrange="-5 5" /> -->
     <position name="thumb_servo" tendon="thumb_tendon" ctrlrange="-3 10" />
-    <velocity name="thumb_vel_servo" tendon="thumb_tendon" ctrlrange="-5 5" />
+    <!-- <velocity name="thumb_vel_servo" tendon="thumb_tendon" ctrlrange="-5 5" /> -->
   </actuator>
 </mujoco>

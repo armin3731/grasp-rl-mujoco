@@ -12,15 +12,15 @@ button_middle = False
 button_right = False
 lastx = 0
 lasty = 0
+bendForce = 1.95
 
 def controller(model, data):
     #put the controller here
     # pass
-    kp = 100
-    kv = 5
+    
 
-    fingerNum = 1
-    fingerbend(fingerNum, True, kp, kv)
+    fingerNum = 0
+    fingerbend(fingerNum, True, bendForce)
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
@@ -92,13 +92,11 @@ def scroll(window, xoffset, yoffset):
     mj.mjv_moveCamera(model, action, 0.0, -0.05 *
                       yoffset, scene, cam)
 
-def fingerbend(fingerNum:int, bend:bool, kp:int=100, kv:int=20 ):
-    actuatorNum = fingerNum*2
-    model.actuator_gainprm[actuatorNum , 0] = kp
-    model.actuator_biasprm[actuatorNum , 1] = -kp
-    model.actuator_gainprm[actuatorNum+1 , 0] = kv
-    model.actuator_biasprm[actuatorNum+1 , 2] = -kv
-    data.ctrl[actuatorNum] = 1.75*np.pi 
+def fingerbend(fingerNum:int, bend:bool, bendforce:float=1.5 ):
+    actuatorNum = fingerNum
+    model.actuator_gainprm[actuatorNum , 0] = bendforce
+    # model.actuator_biasprm[actuatorNum , 1] = -kp
+    data.ctrl[actuatorNum] = 1*np.pi 
 
 #get the full path
 dirname = os.path.dirname(__file__)
@@ -149,7 +147,9 @@ while not glfw.window_should_close(window):
 
     while (data.time - simstart < 1.0/60.0):
         mj.mj_step(model, data)
-
+        
+    # print(mj.mj_name2id(model,1,'object'))
+    
     # if (data.time>=simend):
     #     break
 
