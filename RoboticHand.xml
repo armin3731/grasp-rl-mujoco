@@ -205,19 +205,9 @@
   </equality> 
   <actuator>
     <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
-    <!-- <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
-    <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
-    <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/> 
-    <motor name='index_motor' ctrllimited="true" ctrlrange="0 1" tendon="index_tendon" gear="10"/>  -->
-    <position name="index_pos_servo" tendon="index_tendon"  ctrlrange="-3 10" />
-    <!-- <velocity name="index_vel_servo" tendon="index_tendon" ctrlrange="-5 5" /> -->
-    <position name="middle_servo" tendon="middle_tendon" ctrlrange="-3 10" />
-    <!-- <velocity name="middle_vel_servo" tendon="middle_tendon" ctrlrange="-5 5" /> -->
-    <position name="ring_servo" tendon="ring_tendon" ctrlrange="-3 10" />
-    <!-- <velocity name="ring_vel_servo" tendon="ring_tendon" ctrlrange="-5 5" /> -->
-    <position name="pinky_servo" tendon="pinky_tendon" ctrlrange="-3 10" />
-    <!-- <velocity name="pinky_vel_servo" tendon="pinky_tendon" ctrlrange="-5 5" /> -->
-    <position name="thumb_servo" tendon="thumb_tendon" ctrlrange="-3 10" />
-    <!-- <velocity name="thumb_vel_servo" tendon="thumb_tendon" ctrlrange="-5 5" /> -->
+    <motor name='middle_motor' ctrllimited="true" ctrlrange="0 1" tendon="middle_tendon" gear="10"/> 
+    <motor name='ring_motor' ctrllimited="true" ctrlrange="0 1" tendon="ring_tendon" gear="10"/> 
+    <motor name='pinky_motor' ctrllimited="true" ctrlrange="0 1" tendon="pinky_tendon" gear="10"/> 
+    <motor name='thumb_motor' ctrllimited="true" ctrlrange="0 1" tendon="thumb_tendon" gear="10"/>
   </actuator>
 </mujoco>
