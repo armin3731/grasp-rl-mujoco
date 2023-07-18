@@ -12,7 +12,7 @@ button_middle = False
 button_right = False
 lastx = 0
 lasty = 0
-bendForce = 1.95
+bendForce = 29.5
 
 def controller(model, data):
     #put the controller here
@@ -149,7 +149,7 @@ while not glfw.window_should_close(window):
         mj.mj_step(model, data)
         
     # print(mj.mj_name2id(model,1,'object'))
-    
+
     # if (data.time>=simend):
     #     break
 
