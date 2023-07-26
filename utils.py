@@ -36,11 +36,16 @@ class TrainModel:
         device: torch.device,
         n_actions: int,
         settings: dict,
+        criterion=torch.nn.SmoothL1Loss(),
     ) -> None:
         self.policy_net = policy_net
         self.device = device
         self.n_actions = n_actions
         self.settings = settings
+        self.criterion = criterion
+        self.optimizer = optim.AdamW(
+            self.policy_net.parameters(), lr=self.settings["LR"], amsgrad=True
+        )
 
     def select_action(self, state, episode: int):
         """This method choses the action. At first all actions are random. but after some episodes, actions are chosen from Q-Table"""
@@ -57,7 +62,28 @@ class TrainModel:
                 return self.policy_net(state).max(1)[1].view(1, 1)
         else:
             return torch.tensor(
-                [[env.action_space.sample()]], device=self.device, dtype=torch.long
+                [[math.ceil(random.random() * 2)]], device=self.device, dtype=torch.long
             )
 
-    def optimize(self, )
+    def optimize(self, state, action_taken, reward):
+        """
+        This function optimize the network for one step
+        """
+        current_actions = self.policy_net(state)
+
+        expected_actions = current_actions.copy()
+        expected_actions[0][action_taken] = reward
+
+        loss = self.criterion(current_actions, expected_actions)
+
+        # loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
+
+        # Optimize the model
+        self.optimizer.zero_grad()
+        loss.backward()
+        # In-place gradient clipping
+        torch.nn.utils.clip_grad_value_(self.policy_net.parameters(), 100)
+        self.optimizer.step()
+
+    # *  some part of the optimization algorithm is based on the repo below
+    # *  LOOK AT THIS -> https://github.com/hamedmokazemi/DeepQLearning_FrozenLake_1/blob/main/main_4x4.py
