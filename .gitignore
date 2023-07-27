@@ -1,1 +1,4 @@
 *.txt
+*.log
+*.pyc
+*.ipynb
