@@ -2,11 +2,17 @@ import random
 import math
 import numpy as np
 from scipy.spatial.transform import Rotation
+import os
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+
+import mujoco as mj
+
+
+BEND_FORCE = 29.5  # The force that a finger can produce when bending
 
 
 class QT(nn.Module):
@@ -14,7 +20,7 @@ class QT(nn.Module):
     A class to create QT network
     """
 
-    def __init__(self, n_observations, n_actions):
+    def __init__(self, n_observations: int, n_actions: int, name: str):
         super(QT, self).__init__()
         print(
             "n_actions,n_observations<<<<<<<<<<<<<<<<<<<<<<<<<",
@@ -24,6 +30,7 @@ class QT(nn.Module):
         self.layer1 = nn.Linear(n_observations, 6, dtype=torch.float64)
         self.layer2 = nn.Linear(6, 15, dtype=torch.float64)
         self.layer3 = nn.Linear(15, n_actions, dtype=torch.float64)
+        self.name = name
 
     # Called with either one element to determine next action, or a batch
     # during optimization. Returns tensor([[left0exp,right0exp]...]).
@@ -32,6 +39,18 @@ class QT(nn.Module):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
         return self.layer3(x)
+
+    def save_parameters(self, path: str):
+        torch.save(self.state_dict(), os.path.join(path, "%s.pt" % (self.name)))
+
+    def load_parameters(self, path):
+        self.load_state_dict(torch.load(path))
+        self.eval()
+
+    def predict(self, state):
+        tensor_state = torch.tensor(state, requires_grad=False)
+        _, action = self.forward(tensor_state).max(0)
+        return action
 
 
 class TrainModel:
@@ -152,3 +171,19 @@ def random_pose(mj_data):
     mj_data.qpos[17:21] = rot.as_quat()
 
     return mj_data
+
+
+def finger_bend(
+    finger_num: int, action: int, mj_model, mj_data, bend_force: float = BEND_FORCE
+):
+    if action == 1:
+        mj_model.actuator_gainprm[finger_num, 0] = bend_force
+        mj_data.ctrl[finger_num] = 1 * np.pi
+    return mj_model, mj_data
+
+
+def mujoco_reset_env(mj_model, mj_data):
+    mj.mj_resetData(mj_model, mj_data)
+    mj_data = random_pose(mj_data)
+    mj.mj_forward(mj_model, mj_data)
+    return mj_model, mj_data

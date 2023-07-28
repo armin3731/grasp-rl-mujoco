@@ -1,6 +1,6 @@
 import torch
 
-from utils import QT, TrainModel, random_pose
+from utils import QT, TrainModel, random_pose, finger_bend, mujoco_reset_env
 
 import mujoco as mj
 import numpy as np
@@ -9,41 +9,40 @@ import math
 
 
 # * Settings ==============================================================
+# folder to save the model at the end
+SAVE_FOLDER = "models/"
+
 # Mujoco Settings
 MJ_XML_PATH = "RoboticHand.xml"
 TIME_TO_HOLD = 1.5  # The time that robotic hand should keep the object (is Sec)
-BEND_FORCE = 29.5  # The force that a finger can produce when bending
 
-# if GPU is to be used
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-EPISODES = 1000  # EPISODES is the total number of episodes
+EPISODES = 5  # EPISODES is the total number of episodes
 N_ACTIONS = 2  # The number of actions for robotic hand
 N_OBSERVATIONS = 6  # The the number of state observations [TIP_POSITION[x y z], END_POSITION[[x y z]]]
 
 # Hyperparameters
 HP = {
-    # "BATCH_SIZE": 128,# BATCH_SIZE is the number of transitions sampled from the replay buffer
-    # "GAMMA": 0.99,# GAMMA is the discount factor as mentioned in the previous section
     "EPS_START": 0.9,  # EPS_START is the starting value of epsilon
     "EPS_END": 0.05,  # EPS_END is the final value of epsilon
     "EPS_DECAY": math.floor(
         EPISODES / 5
     ),  # EPS_DECAY controls the rate of exponential decay of epsilon, higher means a slower decay
-    # "TAU": 0.005,# TAU is the update rate of the target network
     "LR": 1e-2,  # LR is the learning rate of the ``AdamW`` optimizer
 }
 
 
 # * Defining Finger QT Models =============================================
+# if GPU is to be used
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 # Define the Networks for each finger
-index_QT = QT(N_OBSERVATIONS, N_ACTIONS).to(device)
+index_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="index_finger").to(device)
 
 # Define Training Model for each finger
 index_TR_Model = TrainModel(index_QT, device, N_ACTIONS, HP)
 
 
-# * Mujoco Functions ===================================================
+# * Mujoco Functions =======================================================
 def controller(
     mj_model,
     mj_data,
@@ -52,22 +51,6 @@ def controller(
     # put the controller here
     index_idx = 0
     mj_model, mj_data = finger_bend(index_idx, actions[index_idx], mj_model, mj_data)
-
-
-def finger_bend(
-    finger_num: int, action: int, mj_model, mj_data, bend_force: float = BEND_FORCE
-):
-    if action == 1:
-        mj_model.actuator_gainprm[finger_num, 0] = bend_force
-        # model.actuator_biasprm[actuatorNum , 1] = -kp
-        mj_data.ctrl[finger_num] = 1 * np.pi
-    return mj_model, mj_data
-
-
-def mujoco_reset_env(mj_model, mj_data):
-    mj.mj_resetData(mj_model, mj_data)
-    mj_data = random_pose(mj_data)
-    mj.mj_forward(mj_model, mj_data)
 
 
 # * Initializations ======================================================
@@ -81,7 +64,7 @@ mj_data = mj.MjData(mj_model)  # MuJoCo data
 
 # * Training ============================================================
 for episode in range(EPISODES):
-    mujoco_reset_env(mj_model, mj_data)  # reset mujoco env
+    mj_model, mj_data = mujoco_reset_env(mj_model, mj_data)  # reset mujoco env
     sim_start = mj_data.time
     tip_location = mj_data.site_xpos[0]  # Object's tip location
     end_location = mj_data.site_xpos[1]  # Object's end location
@@ -129,4 +112,4 @@ for episode in range(EPISODES):
     print("Episode Done")
 
 print("Training Done")
-# TODO: Save the model
+index_QT.save_parameters(SAVE_FOLDER)
