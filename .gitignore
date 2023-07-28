@@ -2,3 +2,7 @@
 *.log
 *.pyc
 *.ipynb
+
+# vscode
+.vscode/*
+.vscode

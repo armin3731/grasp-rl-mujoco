@@ -2,7 +2,7 @@ import mujoco as mj
 from mujoco.glfw import glfw
 import numpy as np
 import os
-from utils import QT, mujoco_reset_env
+from utils import QT, mujoco_reset_env, finger_bend
 
 import torch
 
@@ -10,8 +10,7 @@ import torch
 # * Settings ========================================================
 LOAD_FOLDER = "models/"  # the folder to load the models
 XML_PATH = "RoboticHand.xml"  # xml path
-# ! TIME_TO_HOLD is 1.5 as default
-TIME_TO_HOLD = 15  # the maximum time that hand should keep the object
+TIME_TO_HOLD = 1.5  # the maximum time that hand should keep the object
 NUMBER_OF_SIMULATIONS = 5  # it will simulate the grasp, 5 times
 
 N_ACTIONS = 2  # The number of actions for robotic hand
@@ -38,18 +37,20 @@ lasty = 0
 bendForce = 29.5
 
 
-def controller(model, data):
+def controller(
+    mj_model,
+    mj_data,
+    actions,
+):
     # put the controller here
-    pass
-
-    # fingerNum = 0
-    # fingerbend(fingerNum, True, bendForce)
+    index_idx = 0
+    mj_model, mj_data = finger_bend(index_idx, actions[index_idx], mj_model, mj_data)
 
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
-        mj.mj_resetData(model, data)
-        mj.mj_forward(model, data)
+        mj.mj_resetData(mj_model, mj_data)
+        mj.mj_forward(mj_model, mj_data)
 
 
 def mouse_button(window, button, act, mods):
@@ -107,12 +108,12 @@ def mouse_move(window, xpos, ypos):
     else:
         action = mj.mjtMouse.mjMOUSE_ZOOM
 
-    mj.mjv_moveCamera(model, action, dx / height, dy / height, scene, cam)
+    mj.mjv_moveCamera(mj_model, action, dx / height, dy / height, scene, cam)
 
 
 def scroll(window, xoffset, yoffset):
     action = mj.mjtMouse.mjMOUSE_ZOOM
-    mj.mjv_moveCamera(model, action, 0.0, -0.05 * yoffset, scene, cam)
+    mj.mjv_moveCamera(mj_model, action, 0.0, -0.05 * yoffset, scene, cam)
 
 
 # get the full path
@@ -144,11 +145,6 @@ glfw.set_cursor_pos_callback(window, mouse_move)
 glfw.set_mouse_button_callback(window, mouse_button)
 glfw.set_scroll_callback(window, scroll)
 
-# set the controller
-mj.set_mjcb_control(controller)
-
-# print(os.name)
-
 # Camera settings
 cam.azimuth = -115.3410740203193
 cam.distance = 5.4363140749365115
@@ -161,19 +157,20 @@ print("Total number of DoFs in the model:", mj_model.nv)
 for sim_num in range(NUMBER_OF_SIMULATIONS):
     mj_model, mj_data = mujoco_reset_env(mj_model, mj_data)  # reset mujoco env
     holding_object = 0  # reset hold_object reward
+    mj.mj_forward(mj_model, mj_data)
+    tip_location = mj_data.site_xpos[0]  # Object's tip location
+    end_location = mj_data.site_xpos[1]  # Object's end location
 
+    # Action from policy_net
+    current_state = np.double(np.append(tip_location, end_location))
+    # Select actions
+    index_action = index_QT.predict(current_state)
+    actions = [index_action]
+
+    # set the controller
+    mj.set_mjcb_control(controller(mj_model, mj_data, actions))
     while not glfw.window_should_close(window):
-        mj.mj_forward(mj_model, mj_data)
         sim_start = mj_data.time
-        tip_location = mj_data.site_xpos[0]  # Object's tip location
-        end_location = mj_data.site_xpos[1]  # Object's end location
-
-        # Action from policy_net
-        current_state = np.double(np.append(tip_location, end_location))
-        # Select actions
-        index_action = index_QT.predict(current_state)
-        actions = [index_action]
-
         while mj_data.time - sim_start < 1.0 / 24.0:
             mj.mj_step(mj_model, mj_data)
 
@@ -184,25 +181,21 @@ for sim_num in range(NUMBER_OF_SIMULATIONS):
         if tip_location[2] <= 0 or end_location[2] <= 0:
             holding_object = 0
             break
-
         # get framebuffer viewport
         viewport_width, viewport_height = glfw.get_framebuffer_size(window)
         viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
-
         # Update scene and render
         mj.mjv_updateScene(
             mj_model, mj_data, opt, None, cam, mj.mjtCatBit.mjCAT_ALL.value, scene
         )
         mj.mjr_render(viewport, scene, context)
-
         # swap OpenGL buffers (blocking call due to v-sync)
         glfw.swap_buffers(window)
-
         # process pending GUI events, call GLFW callbacks
         glfw.poll_events()
     print(
         "Simulation %i of %i : Reward = %i"
-        % (sim_num+1, NUMBER_OF_SIMULATIONS, holding_object)
+        % (sim_num + 1, NUMBER_OF_SIMULATIONS, holding_object)
     )
 
 glfw.terminate()
