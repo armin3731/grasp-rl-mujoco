@@ -1,5 +1,6 @@
 import random
 import math
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -14,9 +15,14 @@ class QT(nn.Module):
 
     def __init__(self, n_observations, n_actions):
         super(QT, self).__init__()
-        self.layer1 = nn.Linear(n_observations, 5)
-        self.layer2 = nn.Linear(5, 15)
-        self.layer3 = nn.Linear(15, n_actions)
+        print(
+            "n_actions,n_observations<<<<<<<<<<<<<<<<<<<<<<<<<",
+            n_actions,
+            n_observations,
+        )
+        self.layer1 = nn.Linear(n_observations, 6, dtype=torch.float64)
+        self.layer2 = nn.Linear(6, 15, dtype=torch.float64)
+        self.layer3 = nn.Linear(15, n_actions, dtype=torch.float64)
 
     # Called with either one element to determine next action, or a batch
     # during optimization. Returns tensor([[left0exp,right0exp]...]).
@@ -46,9 +52,6 @@ class TrainModel:
         self.optimizer = optim.AdamW(
             self.policy_net.parameters(), lr=self.settings["LR"], amsgrad=True
         )
-        print("PARAMETR names >>>>>>>>>>>>>>>>>>>>>>>>>")
-        print(self.policy_net._parameters)
-        print("PARAMETR names >>>>>>>>>>>>>>>>>>>>>>>>>")
 
     def select_action(self, state, episode: int):
         """This method choses the action. At first all actions are random. but after some episodes, actions are chosen from Q-Table"""
@@ -94,7 +97,16 @@ class TrainModel:
         This function optimize the network for one step
         """
 
+        print("I am in Optimize =-=-=-=-=-=-=-=--------------------")
         tensor_state = torch.tensor(state, requires_grad=False)
+        print(
+            "state,tensor_state, action_taken, reward =-=-=-=-=-=-=-=--------------------",
+            state,
+            tensor_state,
+            action_taken,
+            reward,
+        )
+
         current_actions = self.policy_net(tensor_state)
         print("output of the newort-=-=-=-=--==-=-=-=-=-=--==-")
         print("action_taken", action_taken)

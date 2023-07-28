@@ -8,6 +8,7 @@ import mujoco as mj
 from mujoco.glfw import glfw
 import numpy as np
 import os
+import math
 
 # * Settings ==============================================================
 # Mujoco Settings
@@ -18,19 +19,22 @@ BEND_FORCE = 29.5  # The force that a finger can produce when bending
 # if GPU is to be used
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+EPISODES = 10  # EPISODES is the total number of episodes
+N_ACTIONS = 2  # The number of actions for robotic hand
+N_OBSERVATIONS = 6  # The the number of state observations [TIP_POSITION[x y z], END_POSITION[[x y z]]]
+
 # Hyperparameters
 HP = {
     # "BATCH_SIZE": 128,# BATCH_SIZE is the number of transitions sampled from the replay buffer
     # "GAMMA": 0.99,# GAMMA is the discount factor as mentioned in the previous section
     "EPS_START": 0.9,  # EPS_START is the starting value of epsilon
     "EPS_END": 0.05,  # EPS_END is the final value of epsilon
-    "EPS_DECAY": 200,  # EPS_DECAY controls the rate of exponential decay of epsilon, higher means a slower decay
+    "EPS_DECAY": math.floor(
+        EPISODES / 5
+    ),  # EPS_DECAY controls the rate of exponential decay of epsilon, higher means a slower decay
     # "TAU": 0.005,# TAU is the update rate of the target network
     "LR": 1e-2,  # LR is the learning rate of the ``AdamW`` optimizer
 }
-EPISODES = 10  # EPISODES is the total number of episodes
-N_ACTIONS = 2  # The number of actions for robotic hand
-N_OBSERVATIONS = 6  # The the number of state observations (TIP_POSITION, END_POSITION)
 
 
 # * Defining Finger QT Models =============================================
@@ -78,7 +82,7 @@ mj_data = mj.MjData(mj_model)  # MuJoCo data
 
 # * Training ============================================================
 for episode in range(EPISODES):
-    mujoco_reset_env()  # reset mujoco env
+    mujoco_reset_env(mj_model, mj_data)  # reset mujoco env
     sim_start = mj_data.time
     tip_location = mj_data.site_xpos[0]  # Object's tip location
     end_location = mj_data.site_xpos[1]  # Object's end location
@@ -89,15 +93,18 @@ for episode in range(EPISODES):
 
     # Action from policy_net
     # Choose the action with the highest value in the current state
-    current_state = np.concatenate(object_properties["tip"], object_properties["end"])
+    current_state = np.double(
+        np.append(object_properties["tip"], object_properties["end"])
+    )
     print("current_state------------------", current_state)
     # Select actions
     index_action = index_TR_Model.select_action(current_state, episode)
     actions = [index_action]
+    print("actions ---------------------", actions)
     # Inject actions into simulation
     mj.set_mjcb_control(controller(mj_model, mj_data, actions))
 
-    # an indicator to show if the robotic hand is holding the object
+    # an indicator to show if the robotic hand is holding the object or not
     is_holding = 0
 
     # Start Simulation
@@ -111,6 +118,7 @@ for episode in range(EPISODES):
         if tip_location[2] <= 0 or end_location[2] <= 0:  # Failure
             break
 
+    print("Till HEREREREREREREREREREREREERERREREREERERERRR")
     # Reward calculation
     # TODO: Reward should be finger dependent
     reward = is_holding
