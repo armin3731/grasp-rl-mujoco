@@ -37,9 +37,17 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Define the Networks for each finger
 index_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="index_finger").to(device)
+middle_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="middle_finger").to(device)
+ring_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="ring_finger").to(device)
+pinky_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="pinky_finger").to(device)
+thumb_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="thumb_finger").to(device)
 
 # Define Training Model for each finger
 index_TR_Model = TrainModel(index_QT, device, N_ACTIONS, HP)
+middle_TR_Model = TrainModel(middle_QT, device, N_ACTIONS, HP)
+ring_TR_Model = TrainModel(ring_QT, device, N_ACTIONS, HP)
+pinky_TR_Model = TrainModel(pinky_QT, device, N_ACTIONS, HP)
+thumb_TR_Model = TrainModel(thumb_QT, device, N_ACTIONS, HP)
 
 
 # * Mujoco Functions =======================================================
@@ -49,8 +57,10 @@ def controller(
     actions,
 ):
     # put the controller here
-    index_idx = 0
-    mj_model, mj_data = finger_bend(index_idx, actions[index_idx], mj_model, mj_data)
+    for each_finger_idx in range(5):
+        mj_model, mj_data = finger_bend(
+            each_finger_idx, actions[each_finger_idx], mj_model, mj_data
+        )
 
 
 # * Initializations ======================================================
@@ -64,6 +74,7 @@ mj_data = mj.MjData(mj_model)  # MuJoCo data
 
 # * Training ============================================================
 for episode in range(EPISODES):
+    print("Episode %i of %i" % (episode + 1, EPISODES))
     mj_model, mj_data = mujoco_reset_env(mj_model, mj_data)  # reset mujoco env
     sim_start = mj_data.time
     tip_location = mj_data.site_xpos[0]  # Object's tip location
@@ -78,11 +89,16 @@ for episode in range(EPISODES):
     current_state = np.double(
         np.append(object_properties["tip"], object_properties["end"])
     )
-    print("current_state------------------", current_state)
+    print("current_state : ", current_state)
     # Select actions
     index_action = index_TR_Model.select_action(current_state, episode)
-    actions = [index_action]
-    print("actions ---------------------", actions)
+    middle_action = middle_TR_Model.select_action(current_state, episode)
+    ring_action = ring_TR_Model.select_action(current_state, episode)
+    pinky_action = pinky_TR_Model.select_action(current_state, episode)
+    thumb_action = thumb_TR_Model.select_action(current_state, episode)
+
+    actions = [index_action, middle_action, ring_action, pinky_action, thumb_action]
+    print("actions : ", actions)
     # Inject actions into simulation
     mj.set_mjcb_control(controller(mj_model, mj_data, actions))
 
@@ -100,16 +116,24 @@ for episode in range(EPISODES):
         if tip_location[2] <= 0 or end_location[2] <= 0:  # Failure
             break
 
-    print("Till HEREREREREREREREREREREREERERREREREERERERRR")
     # Reward calculation
     # TODO: Reward should be finger dependent
     reward = is_holding
+    print("reward : ", reward)
 
     # Update Q-Tables
     index_TR_Model.optimize(current_state, index_action, reward)
+    middle_TR_Model.optimize(current_state, middle_action, reward)
+    ring_TR_Model.optimize(current_state, ring_action, reward)
+    pinky_TR_Model.optimize(current_state, pinky_action, reward)
+    thumb_TR_Model.optimize(current_state, index_action, reward)
 
-    print("---------------------------------------")
-    print("Episode Done")
+    print("--------------------------------------------")
 
 print("Training Done")
 index_QT.save_parameters(SAVE_FOLDER)
+middle_QT.save_parameters(SAVE_FOLDER)
+ring_QT.save_parameters(SAVE_FOLDER)
+pinky_QT.save_parameters(SAVE_FOLDER)
+thumb_QT.save_parameters(SAVE_FOLDER)
+print("QT-Models Saved Successfully")

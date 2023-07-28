@@ -22,11 +22,6 @@ class QT(nn.Module):
 
     def __init__(self, n_observations: int, n_actions: int, name: str):
         super(QT, self).__init__()
-        print(
-            "n_actions,n_observations<<<<<<<<<<<<<<<<<<<<<<<<<",
-            n_actions,
-            n_observations,
-        )
         self.layer1 = nn.Linear(n_observations, 6, dtype=torch.float64)
         self.layer2 = nn.Linear(6, 15, dtype=torch.float64)
         self.layer3 = nn.Linear(15, n_actions, dtype=torch.float64)
@@ -81,28 +76,14 @@ class TrainModel:
         ) * math.exp(-1.0 * episode / self.settings["EPS_DECAY"])
 
         if sample > eps_threshold:
-            print("EPSILON won !!!!!!!!!!!!!!!!!!!!!!!!!!!")
             with torch.no_grad():
                 # t.max(1) will return the largest column value of each row.
                 # second column on max result is index of where max element was
                 # found, so we pick action with the larger expected reward.
                 tensor_state = torch.tensor(state, requires_grad=False)
-                print(
-                    "state, torch_state ===============================",
-                    state,
-                    tensor_state,
-                )
-                policy_response = self.policy_net(tensor_state)
-                highVal, action = self.policy_net(tensor_state).max(0)
-                print(
-                    "highVal, action, policy_res ===============================",
-                    highVal,
-                    action,
-                    policy_response,
-                )
+                _, action = self.policy_net(tensor_state).max(0)
                 return action
         else:
-            print("Sample Random won !!!!!!!!!!!!!!!!!!!!!!!!!!!")
             random_value = math.floor(random.random() * 2)
             if random_value > 1 or random_value < 0:
                 random_value = 1
@@ -116,33 +97,11 @@ class TrainModel:
         """
         This function optimize the network for one step
         """
-
-        print("I am in Optimize =-=-=-=-=-=-=-=--------------------")
         tensor_state = torch.tensor(state, requires_grad=False)
-        print(
-            "state,tensor_state, action_taken, reward =-=-=-=-=-=-=-=--------------------",
-            state,
-            tensor_state,
-            action_taken,
-            reward,
-        )
-
         current_actions = self.policy_net(tensor_state)
-        print("output of the newort-=-=-=-=--==-=-=-=-=-=--==-")
-        print("action_taken", action_taken)
-        print("current_actions", current_actions)
-
         expected_actions = current_actions.clone()
         expected_actions[action_taken] = reward
-        print("output of the newort-=-=-=-=--==-=-=-=-=-=--==-")
-        print("current_actions", current_actions)
-        print("expected_actions", expected_actions)
-        print("output of the newort-=-=-=-=--==-=-=-=-=-=--==-")
         loss = self.criterion(current_actions, expected_actions)
-        print("loss Function-=-=-=-=--==-=-=-=-=-=--==-")
-        print(loss)
-
-        # loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
 
         # Optimize the model
         self.optimizer.zero_grad()

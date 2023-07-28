@@ -22,9 +22,17 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Define the Networks for each finger
 index_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="index_finger").to(device)
+middle_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="middle_finger").to(device)
+ring_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="ring_finger").to(device)
+pinky_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="pinky_finger").to(device)
+thumb_QT = QT(N_OBSERVATIONS, N_ACTIONS, name="thumb_finger").to(device)
 
 # load Models
 index_QT.load_parameters(os.path.join(LOAD_FOLDER, "%s.pt" % (index_QT.name)))
+middle_QT.load_parameters(os.path.join(LOAD_FOLDER, "%s.pt" % (middle_QT.name)))
+ring_QT.load_parameters(os.path.join(LOAD_FOLDER, "%s.pt" % (ring_QT.name)))
+pinky_QT.load_parameters(os.path.join(LOAD_FOLDER, "%s.pt" % (pinky_QT.name)))
+thumb_QT.load_parameters(os.path.join(LOAD_FOLDER, "%s.pt" % (thumb_QT.name)))
 
 
 # * Simulation Default Functionality ================================
@@ -43,8 +51,10 @@ def controller(
     actions,
 ):
     # put the controller here
-    index_idx = 0
-    mj_model, mj_data = finger_bend(index_idx, actions[index_idx], mj_model, mj_data)
+    for each_finger_idx in range(5):
+        mj_model, mj_data = finger_bend(
+            each_finger_idx, actions[each_finger_idx], mj_model, mj_data
+        )
 
 
 def keyboard(window, key, scancode, act, mods):
@@ -165,7 +175,11 @@ for sim_num in range(NUMBER_OF_SIMULATIONS):
     current_state = np.double(np.append(tip_location, end_location))
     # Select actions
     index_action = index_QT.predict(current_state)
-    actions = [index_action]
+    middle_action = middle_QT.predict(current_state)
+    ring_action = ring_QT.predict(current_state)
+    pinky_action = pinky_QT.predict(current_state)
+    thumb_action = thumb_QT.predict(current_state)
+    actions = [index_action, middle_action, ring_action, pinky_action, thumb_action]
 
     # set the controller
     mj.set_mjcb_control(controller(mj_model, mj_data, actions))
