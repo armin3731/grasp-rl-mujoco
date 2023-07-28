@@ -1,14 +1,12 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 
-from utils import QT, TrainModel
+from utils import QT, TrainModel, random_pose
 
 import mujoco as mj
-from mujoco.glfw import glfw
 import numpy as np
 import os
 import math
+
 
 # * Settings ==============================================================
 # Mujoco Settings
@@ -19,7 +17,7 @@ BEND_FORCE = 29.5  # The force that a finger can produce when bending
 # if GPU is to be used
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-EPISODES = 10  # EPISODES is the total number of episodes
+EPISODES = 1000  # EPISODES is the total number of episodes
 N_ACTIONS = 2  # The number of actions for robotic hand
 N_OBSERVATIONS = 6  # The the number of state observations [TIP_POSITION[x y z], END_POSITION[[x y z]]]
 
@@ -68,6 +66,7 @@ def finger_bend(
 
 def mujoco_reset_env(mj_model, mj_data):
     mj.mj_resetData(mj_model, mj_data)
+    mj_data = random_pose(mj_data)
     mj.mj_forward(mj_model, mj_data)
 
 

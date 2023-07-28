@@ -2,9 +2,10 @@ import mujoco as mj
 from mujoco.glfw import glfw
 import numpy as np
 import os
+import utils
 
 xml_path = "RoboticHand.xml"
-TIME_TO_HOLD = 1.5  # the maximum time that hand should keep the object
+TIME_TO_HOLD = 15  # the maximum time that hand should keep the object
 
 
 # For callback functions
@@ -18,10 +19,10 @@ bendForce = 29.5
 
 def controller(model, data):
     # put the controller here
-    # pass
+    pass
 
-    fingerNum = 0
-    fingerbend(fingerNum, True, bendForce)
+    # fingerNum = 0
+    # fingerbend(fingerNum, True, bendForce)
 
 
 def keyboard(window, key, scancode, act, mods):
@@ -142,17 +143,20 @@ cam.lookat = np.array([0.64240141, -0.27601188, 0.45069815])
 
 print("Total number of DoFs in the model:", model.nv)
 
+data = utils.random_pose(data)
 while not glfw.window_should_close(window):
-    simstart = data.time
+    mj.mj_forward(model, data)
+    sim_start = data.time
     tip_location = data.site_xpos[0]  # Object's tip location
     end_location = data.site_xpos[1]  # Object's end location
     print("========================================")
     print("Tip position:", tip_location)
     print("End position:", end_location)
     print("Time of Sim :", data.time)
+    print("Qpos :", data.qpos)
     print("========================================")
 
-    while data.time - simstart < 1.0 / 60.0:
+    while data.time - sim_start < 1.0 / 30.0:
         mj.mj_step(model, data)
 
     # print(mj.mj_name2id(model,1,'object'))

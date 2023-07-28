@@ -1,6 +1,7 @@
 import random
 import math
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 import torch
 import torch.nn as nn
@@ -133,3 +134,21 @@ class TrainModel:
 
     # *  some part of the optimization algorithm is based on the repo below
     # *  LOOK AT THIS -> https://github.com/hamedmokazemi/DeepQLearning_FrozenLake_1/blob/main/main_4x4.py
+
+
+def random_pose(mj_data):
+    """
+    This function makes the object rotate and move randomly at
+    fist moment of each simulation
+
+    This numbers are chosen due to simulation dimensions
+    change them carefully!
+    """
+    mj_data.qpos[14] = (random.random() * 1.1) - 0.4  # X
+    mj_data.qpos[16] = (random.random() * 1.0) + 0.8  # Z
+    rot = Rotation.from_euler(
+        "xyz", np.array([0, ((random.random() * 60) - 30), 0]), degrees=True
+    )
+    mj_data.qpos[17:21] = rot.as_quat()
+
+    return mj_data
