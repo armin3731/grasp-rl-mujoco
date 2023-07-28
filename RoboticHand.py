@@ -3,8 +3,9 @@ from mujoco.glfw import glfw
 import numpy as np
 import os
 
-xml_path = 'RoboticHand.xml'
-# simend = 20
+xml_path = "RoboticHand.xml"
+TIME_TO_HOLD = 1.5  # the maximum time that hand should keep the object
+
 
 # For callback functions
 button_left = False
@@ -14,34 +15,36 @@ lastx = 0
 lasty = 0
 bendForce = 29.5
 
+
 def controller(model, data):
-    #put the controller here
+    # put the controller here
     # pass
-    
 
     fingerNum = 0
     fingerbend(fingerNum, True, bendForce)
+
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
         mj.mj_resetData(model, data)
         mj.mj_forward(model, data)
 
+
 def mouse_button(window, button, act, mods):
     # update button state
     global button_left
     global button_middle
     global button_right
-    
-    button_left = (glfw.get_mouse_button(
-        window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS)
-    button_middle = (glfw.get_mouse_button(
-        window, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS)
-    button_right = (glfw.get_mouse_button(
-        window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS)
+
+    button_left = glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS
+    button_middle = (
+        glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS
+    )
+    button_right = glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS
 
     # update mouse position
     glfw.get_cursor_pos(window)
+
 
 def mouse_move(window, xpos, ypos):
     # compute mouse displacement, save
@@ -64,11 +67,9 @@ def mouse_move(window, xpos, ypos):
     width, height = glfw.get_window_size(window)
 
     # get shift key state
-    PRESS_LEFT_SHIFT = glfw.get_key(
-        window, glfw.KEY_LEFT_SHIFT) == glfw.PRESS
-    PRESS_RIGHT_SHIFT = glfw.get_key(
-        window, glfw.KEY_RIGHT_SHIFT) == glfw.PRESS
-    mod_shift = (PRESS_LEFT_SHIFT or PRESS_RIGHT_SHIFT)
+    PRESS_LEFT_SHIFT = glfw.get_key(window, glfw.KEY_LEFT_SHIFT) == glfw.PRESS
+    PRESS_RIGHT_SHIFT = glfw.get_key(window, glfw.KEY_RIGHT_SHIFT) == glfw.PRESS
+    mod_shift = PRESS_LEFT_SHIFT or PRESS_RIGHT_SHIFT
 
     # determine action based on mouse button
     if button_right:
@@ -84,30 +85,31 @@ def mouse_move(window, xpos, ypos):
     else:
         action = mj.mjtMouse.mjMOUSE_ZOOM
 
-    mj.mjv_moveCamera(model, action, dx/height,
-                      dy/height, scene, cam)
+    mj.mjv_moveCamera(model, action, dx / height, dy / height, scene, cam)
+
 
 def scroll(window, xoffset, yoffset):
     action = mj.mjtMouse.mjMOUSE_ZOOM
-    mj.mjv_moveCamera(model, action, 0.0, -0.05 *
-                      yoffset, scene, cam)
+    mj.mjv_moveCamera(model, action, 0.0, -0.05 * yoffset, scene, cam)
 
-def fingerbend(fingerNum:int, bend:bool, bendforce:float=1.5 ):
+
+def fingerbend(fingerNum: int, bend: bool, bendforce: float = 1.5):
     actuatorNum = fingerNum
-    model.actuator_gainprm[actuatorNum , 0] = bendforce
+    model.actuator_gainprm[actuatorNum, 0] = bendforce
     # model.actuator_biasprm[actuatorNum , 1] = -kp
-    data.ctrl[actuatorNum] = 1*np.pi 
+    data.ctrl[actuatorNum] = 1 * np.pi
 
-#get the full path
+
+# get the full path
 dirname = os.path.dirname(__file__)
-abspath = os.path.join(dirname , xml_path)
+abspath = os.path.join(dirname, xml_path)
 xml_path = abspath
 
 # MuJoCo data structures
 model = mj.MjModel.from_xml_path(xml_path)  # MuJoCo model
-data = mj.MjData(model)                # MuJoCo data
-cam = mj.MjvCamera()                        # Abstract camera
-opt = mj.MjvOption()                        # visualization options
+data = mj.MjData(model)  # MuJoCo data
+cam = mj.MjvCamera()  # Abstract camera
+opt = mj.MjvOption()  # visualization options
 
 # Init GLFW, create window, make OpenGL context current, request v-sync
 glfw.init()
@@ -127,42 +129,48 @@ glfw.set_cursor_pos_callback(window, mouse_move)
 glfw.set_mouse_button_callback(window, mouse_button)
 glfw.set_scroll_callback(window, scroll)
 
-#set the controller
+# set the controller
 mj.set_mjcb_control(controller)
 
-#print(os.name)
+# print(os.name)
 
 # Camera settings
-cam.azimuth =  -115.3410740203193
-cam.distance =  5.4363140749365115
+cam.azimuth = -115.3410740203193
+cam.distance = 5.4363140749365115
 cam.elevation = -32.198838896952104
-cam.lookat = np.array([ 0.64240141, -0.27601188,  0.45069815])
+cam.lookat = np.array([0.64240141, -0.27601188, 0.45069815])
 
-print('Total number of DoFs in the model:', model.nv)
-print('Generalized positions:', data.qpos)
-print('Generalized velocities:', data.qvel)
+print("Total number of DoFs in the model:", model.nv)
 
 while not glfw.window_should_close(window):
     simstart = data.time
+    tip_location = data.site_xpos[0]  # Object's tip location
+    end_location = data.site_xpos[1]  # Object's end location
+    print("========================================")
+    print("Tip position:", tip_location)
+    print("End position:", end_location)
+    print("Time of Sim :", data.time)
+    print("========================================")
 
-    while (data.time - simstart < 1.0/60.0):
+    while data.time - simstart < 1.0 / 60.0:
         mj.mj_step(model, data)
-        
+
     # print(mj.mj_name2id(model,1,'object'))
 
-    # if (data.time>=simend):
-    #     break
-
-    
+    # Stop conditions
+    if data.time >= TIME_TO_HOLD:
+        holding_object = 1
+        break
+    if tip_location[2] <= 0 or end_location[2] <= 0:
+        holding_object = 0
+        break
 
     # get framebuffer viewport
-    viewport_width, viewport_height = glfw.get_framebuffer_size(
-        window)
+    viewport_width, viewport_height = glfw.get_framebuffer_size(window)
     viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
     # Update scene and render
-    mj.mjv_updateScene(model, data, opt, None, cam,
-                       mj.mjtCatBit.mjCAT_ALL.value, scene)
+    mj.mjv_updateScene(model, data, opt, None, cam, mj.mjtCatBit.mjCAT_ALL.value, scene)
     mj.mjr_render(viewport, scene, context)
 
     # swap OpenGL buffers (blocking call due to v-sync)
@@ -172,5 +180,3 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
 
 glfw.terminate()
-
-

@@ -65,7 +65,7 @@ class TrainModel:
                 # found, so we pick action with the larger expected reward.
                 tensor_state = torch.tensor(state, requires_grad=False)
                 print(
-                    "state, torhc_state ===============================",
+                    "state, torch_state ===============================",
                     state,
                     tensor_state,
                 )

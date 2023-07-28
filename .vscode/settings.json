@@ -2,5 +2,12 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "python.formatting.provider": "none"
+    "python.formatting.provider": "none",
+    "cSpell.words": [
+        "gainprm",
+        "Hyperparameters",
+        "Mujoco",
+        "optim",
+        "xpos"
+    ]
 }
