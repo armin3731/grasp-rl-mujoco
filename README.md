@@ -1,4 +1,4 @@
-# Grasp RL MuJoCo
+# Simulation of Grasping for a Robotic hand in MuJoCo using RL
 ![image](https://github.com/armin3731/grasp-rl-mujoco/assets/32842600/06ff171b-3df0-4688-87d5-0f45c05e6bb8)
 ![image](https://github.com/armin3731/grasp-rl-mujoco/assets/32842600/da878f63-42e7-4d2f-9a39-b09b32b6b331)
 
