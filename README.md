@@ -5,6 +5,7 @@
 
 This project simulates the grasping of an object using a robotic hand in the Mujoco platform, utilizing reinforcement learning techniques to train the agent to successfully grasp the object.
 The project involves designing a reward function that incentivizes the agent to grasp objects stably and efficiently while penalizing it for failed grasps or collisions with the environment. The agent learns to manipulate the robotic hand's fingers and joints to achieve a secure grasp, and must adapt to different objects and environments. Through trial and error, the agent learns to optimize its grasping policy, maximizing its chances of success and minimizing the risk of failure. The project demonstrates the potential of reinforcement learning in pyTorch for training autonomous robots to perform complex manipulation tasks, and could have applications in industries such as manufacturing, logistics, and healthcare.
+![image](https://github.com/armin3731/grasp-rl-mujoco/assets/32842600/1a7d1e64-de56-40cb-8666-4d7846b46778)
 
 
 
